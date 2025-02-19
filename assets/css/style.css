@@ -1,7 +1,7 @@
 :root {
-    --primary-color: #193675c7;
-    --secondary-color: #145af3be;
-    --secondary-color-dark: #002f94be;
+    --primary-color: #0f2658c7;
+    --secondary-color: #1142acbe;
+    --secondary-color-dark: #002f948e;
 }
 
 * {
@@ -19,6 +19,7 @@ body {
 
 .container {
     max-width: 580px;
+    min-width: 350px;
     margin: 50px auto;
     border: 1px solid black;
     background: #fff;
@@ -28,7 +29,9 @@ body {
 
 .title {
     text-align: center;
-    color: #333;
+    font-weight: bold;
+    color: #000;
+    margin-bottom: 10px;
 }
 
 .padding {
@@ -85,6 +88,7 @@ ul.lista-candidatos {
     border: 1px solid #ccc;
     border-radius: 10px;
     padding: 10px;
+    margin-bottom: 10px;
 }
 
 .flex {
