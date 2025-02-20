@@ -1,5 +1,5 @@
 function carregaDados() {
-  fetch("./mock.json")
+  fetch("https://mesariobarao.squareweb.app/apuracao")
     .then((response) => response.json())
     .then((dados) => {
       document.querySelector("#total-votos").innerText = dados.total_votos;
