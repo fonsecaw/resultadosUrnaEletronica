@@ -1,73 +1,82 @@
-function carregaDados() {
-  fetch("https://mesariobarao.squareweb.app/apuracao")
-    .then((response) => response.json())
-    .then((dados) => {
-      document.querySelector("#total-votos").innerText = dados.totalGeralDeVotos;
+async function carregaDados() {
+  try {
+    const response = await fetch("https://mesariobarao.squareweb.app/apuracao");
 
-      const listaCandidatos = document.querySelector(".lista-candidatos");
-      listaCandidatos.innerHTML = ""; // Agora está FORA do loop (corrigido)
+    if (!response.ok) {
+      throw new Error(`Erro na requisição: ${response.status}`);
+    }
 
-      dados.apuracao.forEach((apuracao, index) => {
-        const percentual = (apuracao.totalVotos / dados.totalGeralDeVotos) * 100;
-        console.log(index);
+    const dados = await response.json();
 
-        const li = document.createElement("li");
-        li.classList.add("card");
+    document.querySelector("#total-votos").innerText = dados.totalGeralDeVotos;
 
-        const info = document.createElement("span");
-        info.classList.add("left");
-        info.innerHTML = `<strong>${apuracao.nome}</strong>`;
+    const listaCandidatos = document.querySelector(".lista-candidatos");
+    listaCandidatos.innerHTML = ""; // Limpa antes de adicionar novos elementos
 
-        const votos = document.createElement("span");
-        votos.classList.add("votos");
-        votos.innerHTML = `${apuracao.totalVotos} votos`;
+    dados.apuracao.forEach((apuracao, index) => {
+      let percentualDeVotos = (apuracao.totalVotos / dados.totalGeralDeVotos) * 100;
 
-        const textPerc = document.createElement("span");
-        textPerc.classList.add("right");
-        textPerc.innerHTML = `<strong>${percentual.toFixed(2)}%</strong>`;
+      const li = document.createElement("li");
+      li.classList.add("card");
+      li.id = `candidato-${index}`;
 
-        const aling = document.createElement("div");
-        aling.classList.add("flex");
-        aling.appendChild(info);
-        aling.appendChild(textPerc);
+      const nomeCandidato = document.createElement("span");
+      nomeCandidato.classList.add("left");
+      nomeCandidato.innerHTML = `<strong>${apuracao.nome}</strong>`;
 
-        const barra = document.createElement("div");
-        barra.classList.add("progress-container");
+      const votosCandidato = document.createElement("span");
+      votosCandidato.classList.add("votos");
+      votosCandidato.innerHTML = `${apuracao.totalVotos} votos`;
 
-        const progresso = document.createElement("div");
-        progresso.classList.add("progress-bar");
-        progresso.id = `progress-${index}`;
-        progresso.style.width = "0%"; // Garante que a barra começa vazia
+      const percentualTexto = document.createElement("span");
+      percentualTexto.classList.add("right");
+      percentualTexto.innerHTML = `<strong>${percentualDeVotos.toFixed(2)}%</strong>`;
 
-        barra.appendChild(progresso);
-        li.appendChild(aling);
-        li.appendChild(votos);
-        li.appendChild(barra);
+      const aling = document.createElement("div");
+      aling.classList.add("flex");
+      aling.appendChild(nomeCandidato);
+      aling.appendChild(percentualTexto);
 
-        listaCandidatos.appendChild(li);
+      const containerDaBarra = document.createElement("div");
+      containerDaBarra.classList.add("progress-container");
 
-        // Atualiza a barra de progresso depois de adicionar ao DOM
-        atualizarProgresso(`progress-${index}`, percentual);
-      });
-      console.log(dados)
-    })
-    .catch(error => console.error("Erro ao carregar os dados:", error));
+      const progressoDaBarra = document.createElement("div");
+      progressoDaBarra.classList.add("progress-bar");
+      progressoDaBarra.id = `progress-${index}`;
+      progressoDaBarra.style.width = "0%"; //Garante que se inicia em 0
 
-    // Inserindo título com ano automático
-    const data = new Date();
-    const titulo = document.querySelector('.title');
-    titulo.innerText = `Resultados Oficiais da Eleição do Grêmio Estudantil ${data.getFullYear()}`
+      containerDaBarra.appendChild(progressoDaBarra);
+      li.appendChild(aling);
+      li.appendChild(votosCandidato);
+      li.appendChild(containerDaBarra);
+
+      listaCandidatos.appendChild(li);
+
+      atualizaProgresso(`progress-${index}`, percentualDeVotos);
+    });
+
+    console.log(dados);
+  } catch (error) {
+    console.error("Erro ao carregar os dados:", error);
+  }
 }
 
 // Função para atualizar a barra de progresso dinamicamente
-function atualizarProgresso(idBarra, valor) {
-  let progressBar = document.querySelector(`#${idBarra}`); // Adiciona "#" antes do ID
+function atualizaProgresso(idBarra, valor) {
+  let progressBar = document.querySelector(`#${idBarra}`);
 
   if (progressBar) {
     progressBar.style.width = valor + "%";
   }
 }
 
-// Chama a função ao carregar a página
-carregaDados();
+// Funç~~aopara adicionar título com o ano atual
+function titulo() {
+  const data = new Date();
+  const titulo = document.querySelector('.title');
+  titulo.innerText = `Resultados Oficiais da Eleição do Grêmio Estudantil ${data.getFullYear()}`;
+}
 
+// Chama a função ao carregar a página
+titulo();
+carregaDados();
